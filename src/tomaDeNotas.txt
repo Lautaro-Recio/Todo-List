@@ -1,0 +1,54 @@
+1-[
+    {
+      nick: "lau",
+      months: 4,
+      avatar: "https://i.pravatar.cc/150?u=lau",
+      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit.Eveniet numquam dignissimos tempore? Nemo aut commodi maiores doloribus, quam magni cum quo corrupti reiciendis amet dolorum nulla! Placeat officiis nisi delectus!"
+    },
+    {
+      nick: "mili",
+      months: 8,
+      avatar: "https://i.pravatar.cc/150?u=mili",
+
+    }
+  ]
+<ul >{subs.map(sub => {
+    return (
+        <li className='grid place-items-center gap-4 ' key={sub.nick}>
+            <img src={sub.avatar} alt={sub.avatar} />
+            <h4>{sub.nick} (<small>{sub.months}</small>)</h4>
+            <p>{sub.description?.substring(0, 15)}</p>         
+        </li>
+    )
+})}</ul>
+
+En este caso se mapea un array de subs el cual tiene 4 valores dentro de cada objeto, nick, months, avatar y description, como se puede ver en el caso de description tiene un signo de interrogacion a la derecha, eso significa que el valor puede venir "undefined" osea que no tenga ningun valor dentro, esto evitaria que le codigo se rompa si se da este caso
+
+
+2- 
+interface sub {
+  nick: string,
+  months: number,
+  avatar: string,
+  description?: string
+}
+
+Esto es el "tipado" de datos que deberian seguir los objetos con tipado "sub", deberian tener un nick, un months, un avatar y una description que sea opcional
+
+
+3-
+function App() : JSX.Element {
+
+  return (
+    <>
+      <div className='h-screen w-screen overflow-hidden bg-gray-300'>
+       
+      </div>
+
+    </>
+  )
+}
+
+la funcion app devuelve un elemento jsx
+
+4- Utilizar mucho la inferencia de los tipos
