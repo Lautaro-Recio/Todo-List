@@ -31,13 +31,15 @@ export const Footer: React.FC<Props> = (
                 onFilterChange={handleFilterChange}
             />
 
-            {completedCount > 0 && (
+            
                 <button
+                disabled={completedCount > 0 ? false : true}
+                className="border-2 border-gray-200 p-2 rounded-md hover:bg-gray-400 transition-all disabled:cursor-no-drop"
                 onClick={onClearCompleted}
                 >
                     Borrar completos
                 </button>
-            )}
+           
         </footer>
     )
 

@@ -1,29 +1,44 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { ToDos } from './Components/ToDos'
-import { Todo, title, todoId } from './types'
+import { ListOfTodos, Todo, title, todoId } from './types'
 import { TODO_FILTER, values } from './consts'
 import { Footer } from './Components/Footer'
 import { Header } from './Components/Header'
+import { UpdateCompleted, db, deleteFile, uploadFile } from '../firebase'
+import { doc, getDoc } from 'firebase/firestore'
 
-const mockTodos = [
-  { id: 1, title: 'Learn ReactTS', completed: false },
-  { id: 2, title: 'Learn Js', completed: true },
-  { id: 3, title: 'Learn ReactJS', completed: true },
-
-]
 
 function App() {
-  const [todos, setTodos] = useState(mockTodos)
+  const [todos, setTodos] = useState<ListOfTodos>([])
   const [Filter, setFilters] = useState<values>(TODO_FILTER.ALL)
+  const [newUser, setNewUser] = useState("")
+
+  const getData = async (user: string) => {
+    const myRef = doc(db, "tareas", user)
+    const dbCollection = await getDoc(myRef)
+    try {
+      const booksOnFirebase: ListOfTodos = [];
+      dbCollection.data()?.todos.forEach((doc:Todo) => {
+        booksOnFirebase.push(doc)
+      });
+      setTodos(booksOnFirebase)
+    }
+    catch{
+      console.log("Error")
+    }
+  }
 
   useEffect(() => {
-    setTodos(mockTodos)
-  }, [])
+
+    getData(newUser)
+    
+  }, [newUser])
 
   const remove = ({ id }: todoId): void => {
     const newTodos = todos.filter(todo => todo.id !== id)
     setTodos(newTodos)
+    deleteFile(newUser,id,todos)
   }
 
   const completed = ({ id, completed }: Pick<Todo, "id" | "completed">): void => {
@@ -37,6 +52,7 @@ function App() {
       return todo
 
     })
+    UpdateCompleted(newTodos,newUser)
     setTodos(newTodos)
   }
 
@@ -44,7 +60,9 @@ function App() {
   const handleFilterChange = (filter: values): void => {
     setFilters(filter)
   }
-
+  const signIn = (user: string): void => {
+    setNewUser(user)
+  }
   const handleRemoveAllCompleted = () => {
     const newTodos = todos.filter(todo => !todo.completed)
     setTodos(newTodos)
@@ -58,33 +76,44 @@ function App() {
     if (Filter === TODO_FILTER.COMPLETED) return todo.completed
     return todo
   })
+
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max)
   }
+
   const handleAddToDo = ({ title }: title): void => {
     const newTodo = {
       title,
       id: getRandomInt(9999),
       completed: false
     }
-
+    uploadFile(newTodo, newUser)
     const newTodos = [...todos, newTodo]
     setTodos(newTodos)
+    
   }
+
+
   return (
     <>
       <div className='h-screen w-screen min-w-screen grid place-items-center overflow-hidden bg-gray-300'>
-        <div className='bg-white drop-shadow-lg w-2/3 rounded-md p-4'>
+        <div className='bg-white drop-shadow-lg w-475 rounded-md p-4'>
 
-          <Header onAddTodo={handleAddToDo} />
-          <ToDos remove={remove} todos={filterTodos} completedFunction={completed} />
-          <Footer
-            activeCount={activeCount}
-            completedCount={completedCount}
-            filterSelected={Filter}
-            onClearCompleted={handleRemoveAllCompleted}
-            handleFilterChange={handleFilterChange}
-          />
+          <Header getUser={signIn} newUser={newUser} onAddTodo={handleAddToDo} />
+          {newUser && (
+
+            <>
+              <ToDos remove={remove} todos={filterTodos} completedFunction={completed} />
+              <Footer
+                activeCount={activeCount}
+                completedCount={completedCount}
+                filterSelected={Filter}
+                onClearCompleted={handleRemoveAllCompleted}
+                handleFilterChange={handleFilterChange}
+              />
+            </>
+          )
+          }
         </div>
       </div>
 

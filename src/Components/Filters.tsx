@@ -3,7 +3,7 @@ import { FULTERS_BUTTONS, values } from "../consts"
 interface Props {
     filterSelected: values
     onFilterChange: (filter: values) => void
-    //aca topa el tipo de la key del array Todo_Filter
+    //aca tipa el tipo de la key del array Todo_Filter
 }
 
 export const Filters: React.FC<Props> = ({ filterSelected, onFilterChange }) => {
