@@ -42,7 +42,7 @@ export const Footer: React.FC<Props> = (
                 className="border-2 border-gray-200 p-2 rounded-md hover:bg-gray-400 transition-all disabled:cursor-no-drop"
                 onClick={onClearCompleted}
             >
-                Borrar completos
+                Delete completions
             </button>
 
         </footer>
