@@ -10,11 +10,11 @@ export const FULTERS_BUTTONS = {
         href:`/?filter=${TODO_FILTER.ALL}`
     },
     [TODO_FILTER.ACTIVE]:{
-        literal:"Activos",
+        literal:"Active",
         href:`/?filter=${TODO_FILTER.ACTIVE}`
     },
     [TODO_FILTER.COMPLETED]:{
-        literal:"Completados",
+        literal:"Completed",
         href:`/?filter=${TODO_FILTER.COMPLETED}`
     },
     

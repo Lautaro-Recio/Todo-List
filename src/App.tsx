@@ -7,38 +7,41 @@ import { Footer } from './Components/Footer'
 import { Header } from './Components/Header'
 import { UpdateCompleted, db, deleteFile, uploadFile } from '../firebase'
 import { doc, getDoc } from 'firebase/firestore'
+import { Toaster } from 'react-hot-toast'
 
 
 function App() {
   const [todos, setTodos] = useState<ListOfTodos>([])
   const [Filter, setFilters] = useState<values>(TODO_FILTER.ALL)
   const [newUser, setNewUser] = useState("")
+  const [expiration, setExpirationDate] = useState("")
+  
 
   const getData = async (user: string) => {
     const myRef = doc(db, "tareas", user)
     const dbCollection = await getDoc(myRef)
     try {
       const booksOnFirebase: ListOfTodos = [];
-      dbCollection.data()?.todos.forEach((doc:Todo) => {
+      dbCollection.data()?.todos.forEach((doc: Todo) => {
         booksOnFirebase.push(doc)
       });
       setTodos(booksOnFirebase)
     }
-    catch{
+    catch {
       console.log("Error")
     }
   }
-
+ 
   useEffect(() => {
-
-    getData(newUser)
     
+    getData(newUser)
   }, [newUser])
 
   const remove = ({ id }: todoId): void => {
     const newTodos = todos.filter(todo => todo.id !== id)
     setTodos(newTodos)
-    deleteFile(newUser,id,todos)
+    deleteFile(newUser, id, todos)
+
   }
 
   const completed = ({ id, completed }: Pick<Todo, "id" | "completed">): void => {
@@ -52,20 +55,28 @@ function App() {
       return todo
 
     })
-    UpdateCompleted(newTodos,newUser)
+    UpdateCompleted(newTodos, newUser)
     setTodos(newTodos)
   }
 
 
+
+
   const handleFilterChange = (filter: values): void => {
     setFilters(filter)
+  }
+  const setExpirationDateValue = (date: string): void => {
+    setExpirationDate(date)
   }
   const signIn = (user: string): void => {
     setNewUser(user)
   }
   const handleRemoveAllCompleted = () => {
     const newTodos = todos.filter(todo => !todo.completed)
+    console.log(newTodos)
     setTodos(newTodos)
+    UpdateCompleted(newTodos, newUser)
+
   }
 
   const activeCount = todos.filter(todo => !todo.completed).length
@@ -82,29 +93,40 @@ function App() {
   }
 
   const handleAddToDo = ({ title }: title): void => {
+    const date = new Date();
+
+    const month: number = date.getMonth() + 1
+    const day: number = date.getDate()
+    const year: number = date.getFullYear()
+    const dateNow = `${year}-${month}-${day}`
+    const expirationDate = expiration.substring(0, 10)
     const newTodo = {
       title,
-      id: getRandomInt(9999),
-      completed: false
+      id: getRandomInt(9999999999),
+      completed: false,
+      expirationDate,
+      dateNow
+
     }
     uploadFile(newTodo, newUser)
     const newTodos = [...todos, newTodo]
     setTodos(newTodos)
-    
+
   }
 
 
   return (
     <>
       <div className='h-screen w-screen min-w-screen grid place-items-center overflow-hidden bg-gray-300'>
-        <div className='bg-white drop-shadow-lg w-475 rounded-md p-4'>
+        <div className='bg-white drop-shadow-lg w-475 rounded-md md:p-4 p-2'>
 
-          <Header getUser={signIn} newUser={newUser} onAddTodo={handleAddToDo} />
+          <Header expiration={expiration} setExpirationDateValue={setExpirationDateValue} getUser={signIn} newUser={newUser} onAddTodo={handleAddToDo} />
           {newUser && (
 
             <>
-              <ToDos remove={remove} todos={filterTodos} completedFunction={completed} />
+              <ToDos  remove={remove} todos={filterTodos} completedFunction={completed} />
               <Footer
+               
                 activeCount={activeCount}
                 completedCount={completedCount}
                 filterSelected={Filter}
@@ -114,6 +136,7 @@ function App() {
             </>
           )
           }
+          <Toaster />
         </div>
       </div>
 

@@ -28,7 +28,7 @@ export const SignIn: React.FC<Props> = ({ getUser,newUser }) => {
 
                 <button className=" border-2 border-gray-400 rounded-md" onClick={SignWhitGoogle}>
 
-                    <p className="flex justify-center items-center text-lg hover:bg-gray-400 group hover:text-white transition-all">
+                    <p className="flex justify-center px-2 items-center text-lg hover:bg-gray-400 group hover:text-white transition-all">
                         <strong className="text-4xl text-bold group-hover:text-white text-gray-400 p-2">
                             G
                         </strong>
